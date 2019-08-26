@@ -7,6 +7,7 @@ COPY lib/* /usr/local/lib/liara-django/
 ONBUILD COPY . .
 
 ONBUILD RUN pip install --disable-pip-version-check --no-cache-dir -r requirements.txt \
+  && pip install --disable-pip-version-check --no-cache-dir dj-database-url \
   && chmod +x /usr/local/lib/liara-django/*.sh \
   && /usr/local/lib/liara-django/append-settings.sh \
   && mkdir staticfiles \

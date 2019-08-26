@@ -31,3 +31,20 @@ if 'DEBUG' in os.environ:
 if 'SECRET_KEY' in os.environ:
   # Set the Django setting from the environment variable.
   SECRET_KEY = os.environ['SECRET_KEY']
+
+
+# Configure database
+import dj_database_url
+
+MAX_CONN_AGE = 600
+
+if 'DATABASES' not in locals():
+  DATABASES = {'default': None}
+
+try:
+  conn_max_age = CONN_MAX_AGE or MAX_CONN_AGE
+except NameError:
+  conn_max_age = MAX_CONN_AGE
+
+if 'DATABASE_URL' in os.environ:
+  DATABASES['default'] = dj_database_url.config(conn_max_age=conn_max_age, ssl_require=False)
