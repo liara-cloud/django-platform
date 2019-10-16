@@ -1,3 +1,4 @@
+
 ####
 #### The following configuration is automatically appended by Liara.
 ####
@@ -6,17 +7,9 @@ try:
 except NameError:
   ALLOWED_HOSTS = ['*']
 
-# Insert Whitenoise Middleware.
-try:
-  MIDDLEWARE_CLASSES = tuple(['whitenoise.middleware.WhiteNoiseMiddleware'] + list(MIDDLEWARE_CLASSES))
-except NameError:
-  MIDDLEWARE = tuple(['whitenoise.middleware.WhiteNoiseMiddleware'] + list(MIDDLEWARE))
-
-# Enable GZip.
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 # Configure static path
 # TODO: Allow user to customize these 2 settings via build args.
+# TODO: We might just need to check if these are empty then we can configure them.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
