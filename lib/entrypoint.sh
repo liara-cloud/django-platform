@@ -8,7 +8,7 @@ WSGI_FILE=$(python find-wsgi.py $SETTINGS_MODULE)
 
 rm find-wsgi.py Dockerfile
 
-gunicorn $WSGI_FILE --bind 0.0.0.0:8000 &
+gunicorn $WSGI_FILE --bind 127.0.0.1:8000 &
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start gunicorn: $status"
