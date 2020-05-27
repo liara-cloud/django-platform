@@ -26,7 +26,7 @@ ONBUILD RUN pip install --disable-pip-version-check --no-cache-dir -r requiremen
   && chmod +x /usr/local/lib/liara-django/*.sh \
   && /usr/local/lib/liara-django/append-settings.sh \
   && mkdir staticfiles \
-  && python manage.py collectstatic \
+  && python manage.py collectstatic --no-input \
   && mv /usr/local/lib/liara-django/find-wsgi.py find-wsgi.py
 
 CMD /usr/local/lib/liara-django/entrypoint.sh
