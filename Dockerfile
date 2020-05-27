@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 RUN addgroup --system nginx \
     && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 101 nginx \
-    && apt-get update && apt-get install -y --no-install-recommends nginx
+    && apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev
 
 COPY lib/* /usr/local/lib/liara-django/
 COPY nginx.conf /etc/nginx/nginx.conf
