@@ -6,8 +6,17 @@ SETTINGS_MODULE=$(find . -name 'settings.py' | sed -e "s/^\.\///" | sed -e "s/\.
 # Find wsgi
 WSGI_FILE=$(python find-wsgi.py $SETTINGS_MODULE)
 
+# Cleanup
 rm find-wsgi.py Dockerfile
 
+python3 /usr/local/lib/liara-django/load_profile.py
+chmod 0644 /etc/cron.d/liara_cron
+crontab /etc/cron.d/liara_cron
+
+# Start cron service
+if [ ! -z "$__CRON" ]; then cron; fi
+
+# Let's start our webservers
 gunicorn $WSGI_FILE --bind 127.0.0.1:8000 &
 status=$?
 if [ $status -ne 0 ]; then

@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 RUN addgroup --system nginx \
     && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 101 nginx \
-    && apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev
+    && apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev cron vim
 
 COPY lib/* /usr/local/lib/liara-django/
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -28,6 +28,9 @@ ONBUILD RUN pip install --disable-pip-version-check --no-cache-dir -r requiremen
   && mkdir staticfiles \
   && python manage.py collectstatic --no-input \
   && mv /usr/local/lib/liara-django/find-wsgi.py find-wsgi.py
+
+ONBUILD ARG __CRON
+ONBUILD ENV __CRON=${__CRON}
 
 CMD /usr/local/lib/liara-django/entrypoint.sh
 
