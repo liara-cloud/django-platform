@@ -6,6 +6,9 @@ RUN addgroup --system nginx \
     && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 101 nginx \
     && apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev cron vim
 
+COPY --from=liaracloud/supercronic:0.1.9 /usr/local/bin/supercronic /usr/local/bin/supercronic
+ENV SUPERCRONIC_OPTIONS="-debug -split-logs"
+
 COPY lib/* /usr/local/lib/liara-django/
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY liara_nginx.conf /etc/nginx/conf.d/liara_nginx.conf
@@ -13,13 +16,18 @@ COPY liara_nginx.conf .
 
 ONBUILD COPY . .
 
+ONBUILD ARG __DJANGO_TIMEZONE=Asia/Tehran
+ONBUILD ENV TZ=${__DJANGO_TIMEZONE}
+
 ONBUILD RUN if cmp /etc/nginx/conf.d/liara_nginx.conf liara_nginx.conf; \
   then \
     echo 'Applying default liara_nginx.conf...'; \
   else \
     echo 'Applying custom liara_nginx.conf...'; \
     mv liara_nginx.conf /etc/nginx/conf.d/liara_nginx.conf; \
-fi
+fi \
+  && echo 'Configuring timezone:' $TZ && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+  echo $TZ > /etc/timezonero
 
 ONBUILD RUN pip install --disable-pip-version-check --no-cache-dir -r requirements.txt \
   && pip install --disable-pip-version-check --no-cache-dir dj-database-url 'gunicorn==19.9.0' \
@@ -28,6 +36,8 @@ ONBUILD RUN pip install --disable-pip-version-check --no-cache-dir -r requiremen
   && mkdir staticfiles \
   && python manage.py collectstatic --no-input \
   && mv /usr/local/lib/liara-django/find-wsgi.py find-wsgi.py
+
+ENV ROOT=/usr/src/app
 
 ONBUILD ARG __CRON
 ONBUILD ENV __CRON=${__CRON}
