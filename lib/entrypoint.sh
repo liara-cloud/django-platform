@@ -5,15 +5,18 @@ set -e
 mkdir -p /run/liara
 
 # Find settings module
-SETTINGS_MODULE=$(find . -name 'settings.py' | sed -e "s/^\.\///" | sed -e "s/\.py$//" | sed -e "s/\//./")
+SETTINGS_MODULE=$(find . -name 'settings.py')
 
 # Find wsgi
-WSGI_FILE=$(python find-wsgi.py $SETTINGS_MODULE)
+WSGI_FILE=$(python /usr/local/lib/liara-django/find-wsgi.py $SETTINGS_MODULE)
 
 python3 /usr/local/lib/liara-django/load_profile.py
 
 # Start cron service
-if [ ! -z "$__CRON" ]; then supercronic ${SUPERCRONIC_OPTIONS} /run/liara/crontab; fi
+if [ ! -z "$__CRON" ]; then
+  echo '[CRON] Starting...';
+  supercronic ${SUPERCRONIC_OPTIONS} /run/liara/crontab &
+fi
 
 # Let's start our webservers
 gunicorn $WSGI_FILE --bind 127.0.0.1:8000 &
