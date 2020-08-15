@@ -1,21 +1,18 @@
 import os
+import json
 
 def setupCron():
-  cron = os.getenv('__CRON')
-  cron_file = open('/etc/cron.d/liara_cron', 'w+')
+  cron = os.getenv('__CRON') or '[]'
+  crontab = open('/run/liara/crontab', 'w+')
 
-  if not cron:
-    cron_file.close()
-    return
-
-  envs = cron.split('$__SEP') if cron else []
-
-  cron_file.write('PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n')
-  cron_file.write('ROOT=/usr/src/app\n')
+  if '$__SEP' in cron:
+    envs = cron.split('$__SEP')
+  else:
+    envs = json.loads(cron)
 
   for i in range(len(envs)):
-    cron_file.write(envs[i] + '\n')
+    crontab.write(envs[i] + '\n')
 
-  cron_file.close()
+  crontab.close()
 
 setupCron()

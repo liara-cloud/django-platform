@@ -1,20 +1,22 @@
 #!/bin/bash
 
+set -e
+
+mkdir -p /run/liara
+
 # Find settings module
-SETTINGS_MODULE=$(find . -name 'settings.py' | sed -e "s/^\.\///" | sed -e "s/\.py$//" | sed -e "s/\//./")
+SETTINGS_MODULE=$(find . -name 'settings.py')
 
 # Find wsgi
-WSGI_FILE=$(python find-wsgi.py $SETTINGS_MODULE)
-
-# Cleanup
-rm find-wsgi.py Dockerfile
+WSGI_FILE=$(python /usr/local/lib/liara-django/find-wsgi.py $SETTINGS_MODULE)
 
 python3 /usr/local/lib/liara-django/load_profile.py
-chmod 0644 /etc/cron.d/liara_cron
-crontab /etc/cron.d/liara_cron
 
 # Start cron service
-if [ ! -z "$__CRON" ]; then cron; fi
+if [ ! -z "$__CRON" ]; then
+  echo '[CRON] Starting...';
+  supercronic ${SUPERCRONIC_OPTIONS} /run/liara/crontab &
+fi
 
 # Let's start our webservers
 gunicorn $WSGI_FILE --bind 127.0.0.1:8000 &
