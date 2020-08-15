@@ -5,10 +5,10 @@ def setupCron():
   cron = os.getenv('__CRON') or '[]'
   crontab = open('/run/liara/crontab', 'w+')
 
-  if '$__SEP' in cron:
-    envs = cron.split('$__SEP')
-  else:
+  try:
     envs = json.loads(cron)
+  except ValueError:
+    envs = cron.split('$__SEP')
 
   for i in range(len(envs)):
     crontab.write(envs[i] + '\n')
