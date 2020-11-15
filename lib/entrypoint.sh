@@ -19,7 +19,9 @@ if [ ! -z "$__CRON" ]; then
 fi
 
 # Let's start our webservers
-gunicorn $WSGI_FILE --bind 127.0.0.1:8000 &
+gunicorn $WSGI_FILE --bind 127.0.0.1:8000 \
+  --timeout ${GUNICORN_TIMEOUT:-30} \
+  --log-level ${GUNICORN_LOG_LEVEL:-info} &
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start gunicorn: $status"
