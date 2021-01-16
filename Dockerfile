@@ -34,7 +34,7 @@ ONBUILD RUN pip install --disable-pip-version-check --no-cache-dir -r requiremen
   && /usr/local/lib/liara-django/append-settings.sh \
   && mkdir staticfiles \
   && python manage.py collectstatic --no-input \
-  && python manage.py compilemessages --no-input
+  && python manage.py compilemessages
 
 ENV ROOT=/usr/src/app
 
