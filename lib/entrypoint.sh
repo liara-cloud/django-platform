@@ -4,13 +4,7 @@ set -e
 
 mkdir -p /run/liara
 
-# Find settings module
-SETTINGS_MODULE=$(find . -name 'settings.py')
-
-# Find wsgi
-WSGI_FILE=$(python /usr/local/lib/liara-django/find-wsgi.py $SETTINGS_MODULE)
-
-python3 /usr/local/lib/liara-django/load_profile.py
+python3 /usr/local/lib/liara/load_profile.py
 
 # Start cron service
 if [ ! -z "$__CRON" ]; then
@@ -19,7 +13,8 @@ if [ ! -z "$__CRON" ]; then
 fi
 
 # Let's start our webservers
-gunicorn $WSGI_FILE --bind 127.0.0.1:8000 \
+echo '[GUNICORN] Starting...'
+gunicorn $(python3 /usr/local/lib/liara/find-wsgi.py $(/usr/local/lib/liara/find-settings.sh)) --bind 127.0.0.1:8000 \
   --timeout ${GUNICORN_TIMEOUT:-30} \
   --log-level ${GUNICORN_LOG_LEVEL:-info} &
 status=$?
@@ -28,6 +23,7 @@ if [ $status -ne 0 ]; then
   exit $status
 fi
 
+echo '[NGINX] Starting...'
 nginx
 status=$?
 if [ $status -ne 0 ]; then
