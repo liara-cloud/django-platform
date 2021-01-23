@@ -1,3 +1,6 @@
+
+# Don't remove the above line. Because if the main settings file does not have a trailing empty line
+# then we will encounter a syntax error. So the above line is required to separate our settings from the user's.
 import os
 
 ####
