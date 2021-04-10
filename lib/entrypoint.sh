@@ -12,6 +12,12 @@ if [ ! -z "$__CRON" ]; then
   supercronic ${SUPERCRONIC_OPTIONS} /run/liara/crontab &
 fi
 
+# Start Supervisor
+if [ -f /etc/supervisord.d/supervisor.conf ]; then
+  echo '[SUPERVISOR] Starting...';
+  supervisord -c /etc/supervisord.conf
+fi
+
 # Let's start our webservers
 echo '[GUNICORN] Starting...'
 gunicorn $(python3 /usr/local/lib/liara/find-wsgi.py $(/usr/local/lib/liara/find-settings.sh)) --bind 127.0.0.1:8000 \

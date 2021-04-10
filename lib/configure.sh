@@ -41,3 +41,9 @@ if [ "$__DJANGO_COMPILEMESSAGES" = "true" ]; then
   echo '> Running compilemessages...'
   python manage.py compilemessages
 fi
+
+if [ -f $ROOT/supervisor.conf ]; then
+  echo '> Applying supervisor.conf...'
+  mkdir -p /etc/supervisord.d
+  mv $ROOT/supervisor.conf /etc/supervisord.d
+fi

@@ -1,10 +1,12 @@
 FROM python:3.7
 
-WORKDIR /usr/src/app
+ENV ROOT=/usr/src/app
+
+WORKDIR $ROOT
 
 RUN addgroup --system nginx \
     && adduser --system --disabled-login --ingroup nginx --no-create-home --home /nonexistent --gecos "nginx user" --shell /bin/false --uid 101 nginx \
-    && apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev curl cron vim gettext zip unzip \
+    && apt-get update && apt-get install -y --no-install-recommends nginx libpq-dev curl cron vim gettext zip unzip supervisor \
     && ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
 
 COPY --from=liaracloud/supercronic:v0.1.11 /usr/local/bin/supercronic /usr/local/bin/supercronic
@@ -12,6 +14,7 @@ COPY --from=liaracloud/supercronic:v0.1.11 /usr/local/bin/supercronic /usr/local
 COPY lib/* /usr/local/lib/liara/
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY liara_nginx.conf /etc/nginx/conf.d/liara_nginx.conf
+COPY supervisord.conf /etc/supervisord.conf
 
 ONBUILD COPY . .
 
@@ -37,8 +40,6 @@ ONBUILD RUN pip install --disable-pip-version-check --no-cache-dir -r requiremen
   && pip install --disable-pip-version-check --no-cache-dir dj-database-url 'gunicorn==19.9.0' \
   && chmod +x /usr/local/lib/liara/*.sh \
   && /usr/local/lib/liara/configure.sh
-
-ENV ROOT=/usr/src/app
 
 ONBUILD ARG __CRON
 ONBUILD ENV __CRON=${__CRON}
