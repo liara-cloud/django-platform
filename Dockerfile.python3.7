@@ -37,7 +37,7 @@ fi \
   echo $TZ > /etc/timezonero
 
 ONBUILD RUN pip install --disable-pip-version-check --no-cache-dir -r requirements.txt \
-  && pip install --disable-pip-version-check --no-cache-dir dj-database-url 'gunicorn==19.9.0' \
+  && pip install --disable-pip-version-check --no-cache-dir dj-database-url 'gunicorn==20.1.0' \
   && chmod +x /usr/local/lib/liara/*.sh \
   && /usr/local/lib/liara/configure.sh
 
